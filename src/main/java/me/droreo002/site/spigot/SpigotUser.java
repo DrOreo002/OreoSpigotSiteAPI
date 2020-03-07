@@ -20,7 +20,9 @@ public class SpigotUser extends SpigotObject implements User {
     public void update(@NotNull Document newDocument, String objectUrl) {
         validate(objectUrl);
         this.userName = newDocument.getElementsByClass("username").first().text().replace(" ", "");
-        this.profileImageUrl = newDocument.getElementsByClass("avatarScaler").first().getElementsByTag("img").first().absUrl("src");
+        if (newDocument.hasClass("avatarScaler")) {
+            this.profileImageUrl = newDocument.getElementsByClass("avatarScaler").first().getElementsByTag("img").first().absUrl("src");
+        }
     }
 
     @Override

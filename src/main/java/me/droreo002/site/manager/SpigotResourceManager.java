@@ -31,6 +31,7 @@ public class SpigotResourceManager extends SpigotObjectManager<SpigotResource> {
 
             @Override
             public void run() {
+                if (cachedResources.isEmpty()) return;
                 List<Integer> ids = cachedResources.stream().map(SpigotResource::getId).collect(Collectors.toList());
                 cachedResources.clear();
                 ids.forEach(i -> {

@@ -1,5 +1,7 @@
 import me.droreo002.site.SpigotSite;
+import me.droreo002.site.spigot.SpigotBuyers;
 import me.droreo002.site.spigot.SpigotMasterUser;
+import me.droreo002.site.spigot.SpigotPremiumResource;
 import me.droreo002.site.spigot.SpigotResource;
 import me.droreo002.site.spigot.SpigotUser;
 import org.junit.Before;
@@ -75,6 +77,10 @@ public class SpigotSiteTest {
             logData("Resource downloads", String.valueOf(resource.getTotalDownloads()));
             logData("Resource category", resource.getCategory().getAsString());
             logData("Latest update", String.valueOf(resource.getLatestUpdate().getId()));
+            log("Getting buyers...");
+            for (SpigotBuyers.Buyer buyer : ((SpigotPremiumResource) resource).getBuyers().getBuyerCredentials()) {
+                logData(buyer.getUsername(), buyer.getPurchaseDate().toString() + " (" + buyer.getFormattedPurchasePrice() + ")");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
