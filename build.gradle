@@ -1,0 +1,76 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'java'
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        url = 'http://repo.mvdw-software.com/content/groups/public/'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+
+    compile 'net.sourceforge.htmlunit:htmlunit:2.13'
+    compile 'org.jetbrains:annotations:16.0.2'
+    compile "com.google.guava:guava:28.2-jre"
+    compile 'org.jsoup:jsoup:1.13.1'
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    testImplementation 'junit:junit:4.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
+}
+
+test {
+    useJUnit()
+
+    maxHeapSize = '1G'
+}
+
+def pluginName = project.name
+
+group = 'me.droreo002'
+version = '1.0'
+description = 'SpigotSite'
+targetCompatibility = '1.8'
+
+shadowJar {
+    archiveFileName = pluginName + '-' + project.version + '.jar'
+    destinationDirectory = file("C:\\Users\\Anom\\Desktop\\")
+
+    mergeServiceFiles()
+    dependencies {
+        include(dependency('org.jsoup:.*'))
+        include(dependency('com.google.guava:.*'))
+        include(dependency('org.jetbrains:.*'))
+        include(dependency('net.sourceforge.htmlunit:.*'))
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'plugin.yml'
+        filter(ReplaceTokens, tokens: [version: project.version])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
