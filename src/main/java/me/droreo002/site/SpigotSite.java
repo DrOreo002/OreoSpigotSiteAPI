@@ -1,11 +1,6 @@
 package me.droreo002.site;
 
-import com.gargoylesoftware.htmlunit.IncorrectnessListener;
-import com.gargoylesoftware.htmlunit.ScriptException;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HTMLParserListener;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
+import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -15,15 +10,10 @@ import me.droreo002.site.manager.SpigotResourceManager;
 import me.droreo002.site.manager.SpigotUserManager;
 import me.droreo002.site.spigot.SpigotMasterUser;
 import me.droreo002.site.utils.TOTPGenerator;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.logging.LogFactory;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.CSSParseException;
-import org.w3c.css.sac.ErrorHandler;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
@@ -117,7 +107,7 @@ public class SpigotSite {
 
         Element totpField = document.getElementById("ctrl_totp_code");
         if (totpField != null) {
-            byte[] keyBytes = new Base32().decode(authorTotPSecret);
+            byte[] keyBytes = BaseEncoding.base32().decode(authorTotPSecret);
             StringBuilder sb = new StringBuilder();
             for (byte b : keyBytes) {
                 sb.append(String.format("%02X", b));
@@ -284,85 +274,6 @@ public class SpigotSite {
         connection.setRequestProperty("cookie", listToString(siteCookieList));
         connection.setUseCaches(false);
         return connection;
-    }
-
-    /**
-     * Disable logging of HtmlUnit completely
-     *
-     * @param webClient The web client
-     */
-    private void disableHtmlUnitLogging(WebClient webClient) {
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-        java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
-
-        webClient.setIncorrectnessListener(new IncorrectnessListener() {
-
-            @Override
-            public void notify(String arg0, Object arg1) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        webClient.setCssErrorHandler(new ErrorHandler() {
-
-            @Override
-            public void warning(CSSParseException exception) throws CSSException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void fatalError(CSSParseException exception) throws CSSException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void error(CSSParseException exception) throws CSSException {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
-
-            @Override
-            public void timeoutError(HtmlPage arg0, long arg1, long arg2) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void scriptException(HtmlPage arg0, ScriptException arg1) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void malformedScriptURL(HtmlPage arg0, String arg1, MalformedURLException arg2) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void loadScriptError(HtmlPage arg0, URL arg1, Exception arg2) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        webClient.setHTMLParserListener(new HTMLParserListener() {
-
-            @Override
-            public void error(String message, URL url, String html, int line, int column, String key) {
-
-            }
-
-            @Override
-            public void warning(String message, URL url, String html, int line, int column, String key) {
-
-            }
-        });
     }
 
     private class ScrapperCallback implements CloudflareScrapperV2.cfCallback {
