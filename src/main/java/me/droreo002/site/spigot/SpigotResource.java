@@ -44,7 +44,16 @@ public class SpigotResource extends SpigotObject {
         this.category = Category.match(sideResourceInfo.select(".resourceCategory").first().getElementsByTag("a").first().text());
         this.firstRelease = sideResourceInfo.select(".firstRelease").text();
         this.totalDownloads = Integer.parseInt(sideResourceInfo.select(".downloadCount").first().getElementsByTag("dd").first().text().replace(",", ""));
+        updateResourceUpdates(objectUrl);
+    }
 
+    /**
+     * Update the resource update list
+     *
+     * @param objectUrl The object url
+     */
+    @SneakyThrows
+    public void updateResourceUpdates(String objectUrl) {
         // Resource update
         String updateListUrl = objectUrl + "/updates";
         Document updateDocument = SpigotSite.getInstance().getDocument(updateListUrl).get();
@@ -53,10 +62,22 @@ public class SpigotResource extends SpigotObject {
             for (Element page : pages) {
                 String newUrl = SpigotSite.SPIGOT_URL + "/" + page.attr("href");
                 Document updatePage = SpigotSite.getInstance().getDocument(newUrl).get();
-                Elements elements = updatePage.select("div.updateContainer ol li");
-                for (Element uPage : elements) {
-                    String updateDirectUrl = objectUrl + "/update?" + "update=" + uPage.attr("id").replace("update-", "");
-                    resourceUpdates.add(new SpigotResourceUpdate(updateDirectUrl, 0));
+                Elements elements = updatePage.select("div.updateContainer ol li.primaryContent");
+                for (int i = 0; i < 5; i++) {
+                    try {
+                        Element uPage = elements.get(i);
+                        int updateId;
+                        try {
+                            updateId = Integer.parseInt(uPage.attr("id").replace("update-", ""));
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error reading update on " + uPage.html());
+                            continue;
+                        }
+                        String updateDirectUrl = objectUrl + "/update?" + "update=" + updateId;
+                        resourceUpdates.add(new SpigotResourceUpdate(updateDirectUrl, 0));
+                    } catch (IndexOutOfBoundsException e) {
+                        break;
+                    }
                 }
                 break; // Only loop for first page
             }
@@ -146,12 +167,12 @@ public class SpigotResource extends SpigotObject {
          * @param asString The string
          * @return Category, can be null
          */
-        @Nullable
+        @NotNull
         public static Category match(String asString) {
             for (Category c : values()) {
                 if (c.asString.equalsIgnoreCase(asString)) return c;
             }
-            return null;
+            return Category.SPIGOT; // Default
         }
     }
 }

@@ -1,6 +1,7 @@
 package me.droreo002.site.cloudflare;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -53,6 +54,8 @@ public class CloudflareScrapperV2 {
 
     private boolean canVisit = false;
     private boolean hasNewUrl = false;  //when cf return 301 you need to change old url to new url;
+    @Getter
+    private boolean cloudFlared = true;
 
     public CloudflareScrapperV2(String url) {
         mUrl = url;
@@ -78,6 +81,7 @@ public class CloudflareScrapperV2 {
         });
     }
 
+    @SneakyThrows
     private void urlThread(cfCallback callback){
         mCookieManager = new CookieManager();
         mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL); //接受所有cookies
@@ -85,8 +89,10 @@ public class CloudflareScrapperV2 {
         HttpURLConnection.setFollowRedirects(false);
         StringBuilder response = new StringBuilder();
 
-        while (!canVisit) {
-            if (mRetry_count>MAX_COUNT){
+        cloudFlared = !(checkUrl() == 200); // Cloud flared is false if response code is 200
+
+        while (!canVisit && cloudFlared) {
+            if (mRetry_count > MAX_COUNT) {
                 throw new IllegalStateException("Failed to bypass CloudFlare!");
             }
             try {
@@ -106,7 +112,7 @@ public class CloudflareScrapperV2 {
                     getVisitCookie();
                 }
             } catch (IOException| RuntimeException | InterruptedException e) {
-                if (mCookieList!=null){
+                if (mCookieList != null){
                     mCookieList= new ArrayList<>(mCookieList);
                     mCookieList.clear();
                 }
@@ -117,7 +123,7 @@ public class CloudflareScrapperV2 {
             mRetry_count++;
         }
         if (callback != null) {
-            if (canVisit) {
+            if (canVisit || !cloudFlared) {
                 callback.onSuccess(mCookieList, hasNewUrl, mUrl, response);
             } else {
                 System.out.println("Failed to bypass CloudFlare. Maybe its not protected?");

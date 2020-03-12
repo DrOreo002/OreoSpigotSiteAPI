@@ -1,13 +1,22 @@
 package me.droreo002.site.manager;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.droreo002.site.SpigotSite;
 import me.droreo002.site.spigot.SpigotObject;
+import me.droreo002.site.spigot.SpigotResource;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public abstract class SpigotObjectManager<T extends SpigotObject> {
 
@@ -17,10 +26,37 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
     private SpigotSite spigotSite;
     @Getter
     private String objectSubUrl;
+    @Getter
+    private List<T> cachedObjects;
+    @Getter
+    private boolean cacheUpdaterStarted;
 
     public SpigotObjectManager(SpigotSite spigotSite, String objectSubUrl) {
         this.objectSubUrl = SpigotSite.SPIGOT_URL + "/" + objectSubUrl;
         this.spigotSite = spigotSite;
+        this.cachedObjects = new CopyOnWriteArrayList<>();
+    }
+
+    public void startCacheUpdater() {
+        if (this.cacheUpdaterStarted) return;
+        this.cacheUpdaterStarted = true;
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                if (cachedObjects.isEmpty()) return;
+                List<Integer> ids = cachedObjects.stream().map(SpigotObject::getId).collect(Collectors.toList());
+                cachedObjects.clear();
+                ids.forEach(i -> {
+                    try {
+                        getObject(i).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }, TimeUnit.MINUTES.toMillis(10), TimeUnit.SECONDS.toMillis(30));
     }
 
     /**
@@ -40,4 +76,25 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
      */
     @Nullable
     public abstract Future<T> getObject(String objectName);
+
+    /**
+     * Add that object into cache
+     *
+     * @param object The object
+     */
+    public void addCache(T object) {
+        this.cachedObjects.removeIf(o -> o.getId() == object.getId());
+        this.cachedObjects.add(object);
+    }
+
+    /**
+     * Get spigot resource in cached
+     *
+     * @param objectId The resource id
+     * @return SpigotResource
+     */
+    @Nullable
+    public T getCachedObject(int objectId) {
+        return this.cachedObjects.stream().filter(resource -> resource.getId() == objectId).findAny().orElse(null);
+    }
 }

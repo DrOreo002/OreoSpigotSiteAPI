@@ -40,7 +40,11 @@ public class SpigotBuyers extends SpigotObject {
                     String purchaseString = purchaseElement.text();
                     if (purchaseString.contains("Purchased")) {
                         String[] data = purchaseString.split("Purchased For:");
-                        double price = Double.parseDouble(data[1].split(" ")[0]);
+                        double price = 0D;
+                        try {
+                            price = Double.parseDouble(data[1].split(" ")[0]);
+                        } catch (Exception ignored) {
+                        }
                         String currency = data[1].split(" ")[1];
                         buyer.setPurchaseCurrency(currency);
                         buyer.setPurchasePrice(price);

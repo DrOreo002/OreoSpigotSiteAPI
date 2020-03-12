@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 import static me.droreo002.site.cloudflare.CloudflareScrapperV2.ACCEPT;
 import static me.droreo002.site.cloudflare.CloudflareScrapperV2.listToString;
@@ -81,6 +79,7 @@ public class SpigotSite {
         // Core initializing
         this.scrapper = new CloudflareScrapperV2(SPIGOT_URL, CloudflareScrapperV1.USER_AGENT);
         scrapper.start(new ScrapperCallback()).get();
+        System.out.println("CloudFlared: " + scrapper.isCloudFlared());
 
         // Initialize managers
         this.spigotUserManager = new SpigotUserManager(this);
@@ -131,6 +130,7 @@ public class SpigotSite {
         } else {
             throw new IllegalStateException("Failed to get TOTP Field!");
         }
+        System.out.println("Successfully authenticated spigot user (" + authorUserName + ")");
     }
 
     /**
