@@ -8,7 +8,7 @@ import me.droreo002.site.cloudflare.CloudflareScrapperV1;
 import me.droreo002.site.cloudflare.CloudflareScrapperV2;
 import me.droreo002.site.manager.SpigotResourceManager;
 import me.droreo002.site.manager.SpigotUserManager;
-import me.droreo002.site.spigot.SpigotMasterUser;
+import me.droreo002.site.spigot.user.SpigotMasterUser;
 import me.droreo002.site.utils.TOTPGenerator;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

@@ -59,7 +59,7 @@ public abstract class SpigotObject {
      * @param url The object url to validate
      */
     public static void validate(String url) {
-        if (url == null) throw new NullPointerException("Url cannot be null!");
+        if (url == null) return;
         try {
             Document objectDocument = SpigotSite.getInstance().getDocument(url).get();
             if (objectDocument.getElementsByClass("baseHtml").text().contains("The requested page could not be found.")) {

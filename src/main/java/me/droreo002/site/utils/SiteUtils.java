@@ -2,7 +2,7 @@ package me.droreo002.site.utils;
 
 import lombok.SneakyThrows;
 import me.droreo002.site.SpigotSite;
-import me.droreo002.site.spigot.SpigotResource;
+import me.droreo002.site.spigot.resource.SpigotResource;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 

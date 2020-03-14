@@ -1,7 +1,8 @@
-package me.droreo002.site.spigot;
+package me.droreo002.site.spigot.resource;
 
 import lombok.Getter;
 import me.droreo002.site.SpigotSite;
+import me.droreo002.site.spigot.SpigotObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;

@@ -1,12 +1,12 @@
 package me.droreo002.site.manager;
 
-import lombok.Getter;
 import me.droreo002.site.SpigotSite;
 import me.droreo002.site.exceptions.NotSupportedException;
-import me.droreo002.site.spigot.SpigotPremiumResource;
-import me.droreo002.site.spigot.SpigotResource;
+import me.droreo002.site.spigot.resource.SpigotPremiumResource;
+import me.droreo002.site.spigot.resource.SpigotResource;
 import me.droreo002.site.utils.SiteUtils;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.nodes.Document;
 
 import java.util.concurrent.Future;
 
@@ -38,5 +38,13 @@ public class SpigotResourceManager extends SpigotObjectManager<SpigotResource> {
     @Override
     public @Nullable Future<SpigotResource> getObject(String objectName) {
         throw new NotSupportedException("Get object by name is not supported in here!");
+    }
+
+    @Override
+    public @Nullable Future<Document> getObjectDocument(String targetUrl) {
+        return THREAD_POOL.submit(() -> {
+            String url = getObjectSubUrl() + targetUrl;
+            return SpigotSite.getInstance().getDocument(url).get();
+        });
     }
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.droreo002.site.SpigotSite;
+import me.droreo002.site.spigot.user.SpigotUser;
 import me.droreo002.site.utils.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

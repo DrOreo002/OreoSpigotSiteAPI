@@ -1,10 +1,9 @@
 package me.droreo002.site.manager;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import me.droreo002.site.SpigotSite;
 import me.droreo002.site.spigot.SpigotObject;
-import me.droreo002.site.spigot.SpigotUser;
+import me.droreo002.site.spigot.user.SpigotUser;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 
@@ -35,11 +34,20 @@ public class SpigotUserManager extends SpigotObjectManager<SpigotUser> {
     @SneakyThrows
     public @Nullable Future<SpigotUser> getObject(String objectName) {
         return THREAD_POOL.submit(() -> {
-            String url = getObjectSubUrl() + "?username=" + objectName;
-            Document document = SpigotSite.getInstance().getDocument(url).get();
-            SpigotObject.validate(url);
+            Document document = getObjectDocument("?username=" + objectName).get();
             String profileLink = document.getElementsByClass("topLink").first().getElementsByTag("a").first().attr("href");
             return getObject(Integer.parseInt(profileLink.split("/")[2].replace(objectName.toLowerCase() + ".", ""))).get();
+        });
+    }
+
+    @Override
+    @SneakyThrows
+    public @Nullable Future<Document> getObjectDocument(String targetUrl) {
+        return THREAD_POOL.submit(() -> {
+            String url = getObjectSubUrl() + targetUrl;
+            Document document = SpigotSite.getInstance().getDocument(url).get();
+            SpigotObject.validate(document);
+            return document;
         });
     }
 }

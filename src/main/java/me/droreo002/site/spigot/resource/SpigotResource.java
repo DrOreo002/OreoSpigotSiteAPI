@@ -1,8 +1,11 @@
-package me.droreo002.site.spigot;
+package me.droreo002.site.spigot.resource;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.droreo002.site.SpigotSite;
+import me.droreo002.site.spigot.SpigotObject;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,13 +19,15 @@ import java.util.List;
 public class SpigotResource extends SpigotObject {
 
     @Getter
-    private String name, author, lastUpdate, tag, firstRelease, version, iconUrl;
+    private String name, lastUpdate, tag, firstRelease, version, iconUrl, jarSize;
     @Getter
     private int totalDownloads;
     @Getter
     private Category category;
     @Getter
     private List<SpigotResourceUpdate> resourceUpdates;
+    @Getter
+    private Author author;
 
     public SpigotResource(@NotNull String objectUrl, int id) {
         super(objectUrl, id);
@@ -39,11 +44,15 @@ public class SpigotResource extends SpigotObject {
         this.name = resourceInfo.select("h1").first().text();
         this.tag = resourceInfo.getElementsByClass("tagLine muted").first().text();
         Element sideResourceInfo = objectDocument.getElementsByClass("uix_mainSidebar").first().getElementById("resourceInfo").getElementsByClass("secondaryContent").first();
-        this.author = sideResourceInfo.select(".author").text().replace("Author: ", "");
         this.lastUpdate = sideResourceInfo.select(".lastUpdate").text();
         this.category = Category.match(sideResourceInfo.select(".resourceCategory").first().getElementsByTag("a").first().text());
         this.firstRelease = sideResourceInfo.select(".firstRelease").text();
         this.totalDownloads = Integer.parseInt(sideResourceInfo.select(".downloadCount").first().getElementsByTag("dd").first().text().replace(",", ""));
+        this.jarSize = objectDocument.select("label.downloadButton small.minorText").first().text().replace(" .jar", "");
+
+        Element authorElement = sideResourceInfo.select(".author").select("a").first();
+        this.author = new Author(Integer.parseInt(authorElement.attr("href").split("\\.")[1].replace("/", "")), authorElement.text());
+
         updateResourceUpdates(objectUrl);
     }
 
@@ -173,6 +182,23 @@ public class SpigotResource extends SpigotObject {
                 if (c.asString.equalsIgnoreCase(asString)) return c;
             }
             return Category.SPIGOT; // Default
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class Author {
+        private int id;
+        private String userName;
+
+        /**
+         * Get the combined, useful for
+         * url search
+         *
+         * @return Combined id and username
+         */
+        public String combine() {
+            return userName.toLowerCase() + "." + id;
         }
     }
 }

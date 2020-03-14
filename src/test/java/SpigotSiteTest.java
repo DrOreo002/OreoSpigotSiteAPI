@@ -1,9 +1,9 @@
 import me.droreo002.site.SpigotSite;
 import me.droreo002.site.spigot.SpigotBuyers;
-import me.droreo002.site.spigot.SpigotMasterUser;
-import me.droreo002.site.spigot.SpigotPremiumResource;
-import me.droreo002.site.spigot.SpigotResource;
-import me.droreo002.site.spigot.SpigotUser;
+import me.droreo002.site.spigot.user.SpigotMasterUser;
+import me.droreo002.site.spigot.resource.SpigotPremiumResource;
+import me.droreo002.site.spigot.resource.SpigotResource;
+import me.droreo002.site.spigot.user.SpigotUser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,32 +22,6 @@ public class SpigotSiteTest {
             } catch (IllegalStateException e) {
                 this.spigotSite = SpigotSite.getInstance();
             }
-        }
-    }
-
-    @Test
-    public void getUserByIdTest() {
-        header("Get user by ID");
-        try {
-            SpigotUser user = spigotSite.getSpigotUserManager().getObject(416123).get();
-            logData("Name", user.getUserName());
-            logData("Id", String.valueOf(user.getId()));
-            logData("Profile Image", user.getProfileImageUrl());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void getUserByNameTest() {
-        header("Get user by Name");
-        try {
-            SpigotUser user = spigotSite.getSpigotUserManager().getObject("DrOreo002").get();
-            logData("Name", user.getUserName());
-            logData("Id", String.valueOf(user.getId()));
-            logData("Profile Image", user.getProfileImageUrl());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
         }
     }
 
@@ -71,16 +45,13 @@ public class SpigotSiteTest {
     public void getPremiumResourceTest() {
         header("Get premium resource by ID");
         try {
-            SpigotResource resource = spigotSite.getSpigotResourceManager().getObject(74064).get();
+            SpigotResource resource = spigotSite.getSpigotResourceManager().getObject(75786).get();
             logData("Resource name", resource.getName());
-            logData("Resource author", resource.getAuthor());
+            logData("Resource author", resource.getAuthor().combine());
             logData("Resource downloads", String.valueOf(resource.getTotalDownloads()));
             logData("Resource category", resource.getCategory().getAsString());
             logData("Latest update", String.valueOf(resource.getLatestUpdate().getId()));
-            log("Getting buyers...");
-            for (SpigotBuyers.Buyer buyer : ((SpigotPremiumResource) resource).getBuyers().getBuyerCredentials()) {
-                logData(buyer.getUsername(), buyer.getPurchaseDate().toString() + " (" + buyer.getFormattedPurchasePrice() + ")");
-            }
+            if (resource instanceof SpigotPremiumResource) logData("Resource price", ((SpigotPremiumResource) resource).getPrice());
         } catch (Exception e) {
             e.printStackTrace();
         }

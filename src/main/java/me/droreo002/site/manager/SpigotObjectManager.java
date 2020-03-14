@@ -1,11 +1,10 @@
 package me.droreo002.site.manager;
 
 import lombok.Getter;
-import lombok.Setter;
 import me.droreo002.site.SpigotSite;
 import me.droreo002.site.spigot.SpigotObject;
-import me.droreo002.site.spigot.SpigotResource;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.nodes.Document;
 
 import java.util.List;
 import java.util.Timer;
@@ -76,6 +75,15 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
      */
     @Nullable
     public abstract Future<T> getObject(String objectName);
+
+    /**
+     * Get the object document
+     *
+     * @param targetUrl The object's target url
+     * @return The object document
+     */
+    @Nullable
+    public abstract Future<Document> getObjectDocument(String targetUrl);
 
     /**
      * Add that object into cache
