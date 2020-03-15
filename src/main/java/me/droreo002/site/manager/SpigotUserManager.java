@@ -6,6 +6,7 @@ import me.droreo002.site.spigot.SpigotObject;
 import me.droreo002.site.spigot.user.SpigotUser;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.util.concurrent.Future;
 
@@ -36,7 +37,8 @@ public class SpigotUserManager extends SpigotObjectManager<SpigotUser> {
         return THREAD_POOL.submit(() -> {
             Document document = getObjectDocument("?username=" + objectName).get();
             String profileLink = document.getElementsByClass("topLink").first().getElementsByTag("a").first().attr("href");
-            return getObject(Integer.parseInt(profileLink.split("/")[2].replace(objectName.toLowerCase() + ".", ""))).get();
+            int id = Integer.parseInt(profileLink.split("/")[2].replace(objectName.toLowerCase() + ".", ""));
+            return getObject(id).get();
         });
     }
 

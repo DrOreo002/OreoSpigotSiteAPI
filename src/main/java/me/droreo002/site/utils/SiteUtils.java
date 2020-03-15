@@ -10,8 +10,14 @@ public final class SiteUtils {
 
     @SneakyThrows
     public static SpigotResource.Category getResourceCategory(String resourceUrl) {
-        Document document = SpigotSite.getInstance().getDocument(resourceUrl).get();
-        Element sideResourceInfo = document.getElementsByClass("uix_mainSidebar").first().getElementById("resourceInfo").getElementsByClass("secondaryContent").first();
-        return SpigotResource.Category.match(sideResourceInfo.select(".resourceCategory").first().getElementsByTag("a").first().text());
+        try {
+            Document document = SpigotSite.getInstance().getDocument(resourceUrl).get();
+            Element sideResourceInfo = document.getElementsByClass("uix_mainSidebar").first().getElementById("resourceInfo").getElementsByClass("secondaryContent").first();
+            return SpigotResource.Category.match(sideResourceInfo.select(".resourceCategory").first().getElementsByTag("a").first().text());
+        } catch (Exception e) {
+            // Use default
+            System.out.println("Failed to get category on " + resourceUrl + ". Now using default one");
+            return SpigotResource.Category.SPIGOT;
+        }
     }
 }

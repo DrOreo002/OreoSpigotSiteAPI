@@ -84,6 +84,37 @@ public class SpigotBuyers extends SpigotObject {
         }
     }
 
+    /**
+     * Get buyer information from user id
+     *
+     * @param userId The user id
+     * @return Buyer
+     */
+    @Nullable
+    public Buyer getBuyer(int userId) {
+        return this.buyerCredentials.stream().filter(b -> b.getUserId() == userId).findAny().orElse(null);
+    }
+
+    /**
+     * Check if the user id is a buyer
+     *
+     * @param userId The user id
+     * @return true if buyer, false otherwise
+     */
+    public boolean isBuyer(int userId) {
+        return this.buyerCredentials.stream().anyMatch(b -> b.getUserId() == userId);
+    }
+
+    /**
+     * Check if the user name is a buyer
+     *
+     * @param userName The user name
+     * @return true if buyer, false otherwise
+     */
+    public boolean isBuyer(String userName) {
+        return this.buyerCredentials.stream().anyMatch(b -> b.getUsername().equalsIgnoreCase(userName));
+    }
+
     @Data
     public static class Buyer {
         private String purchaseCurrency;
@@ -110,6 +141,15 @@ public class SpigotBuyers extends SpigotObject {
         @Nullable
         public SpigotUser asSpigotUser() {
             return SpigotSite.getInstance().getSpigotUserManager().getObject(userId).get();
+        }
+
+        /**
+         * Get the user link
+         *
+         * @return The user link
+         */
+        public String getUserLink() {
+            return "https://www.spigotmc.org/members/" + username.toLowerCase() + "." + userId;
         }
     }
 }

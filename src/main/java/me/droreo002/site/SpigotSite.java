@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -74,12 +75,17 @@ public class SpigotSite {
         this.authorUserName = authorUserName;
         this.authorPassword = authorPassword;
         this.authorTotPSecret = authorTotPSecret;
-        this.siteCookieList = new ArrayList<>();
+        this.siteCookieList = new CopyOnWriteArrayList<>();
 
         // Core initializing
         this.scrapper = new CloudflareScrapperV2(SPIGOT_URL, CloudflareScrapperV1.USER_AGENT);
         scrapper.start(new ScrapperCallback()).get();
         System.out.println("CloudFlared: " + scrapper.isCloudFlared());
+        while (!getDocument(SPIGOT_URL).get().html().contains("The SpigotMC project is run entirely in the spare time of our wonderful developers")) {
+            this.siteCookieList.clear();
+            this.scrapper = new CloudflareScrapperV2(SPIGOT_URL, CloudflareScrapperV1.USER_AGENT);
+            scrapper.start(new ScrapperCallback()).get();
+        }
 
         // Initialize managers
         this.spigotUserManager = new SpigotUserManager(this);
@@ -228,6 +234,9 @@ public class SpigotSite {
                 case HttpURLConnection.HTTP_UNAVAILABLE:
                     scrapper.start(new ScrapperCallback()).get(); // Start the scrapper back if failed
                     return null;
+                case HttpURLConnection.HTTP_BAD_GATEWAY:
+                    this.siteCookieList.clear(); // Clear cache and possibly go back?
+                    return new URL(SPIGOT_URL);
             }
             return null;
         });
@@ -283,7 +292,7 @@ public class SpigotSite {
         public void onSuccess(List<HttpCookie> cookieList, boolean hasNewUrl, String newUrl, StringBuilder rawResponse) {
             if (cookieList == null) {
                 // Website is not protected by CloudFlare
-                siteCookieList = new ArrayList<>();
+                siteCookieList.clear();
             } else {
                 siteCookieList = getNewestCookie(cookieList);
             }

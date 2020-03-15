@@ -27,7 +27,6 @@ public class SpigotPremiumResource extends SpigotResource {
         Elements downloadButton = objectDocument.select("label.downloadButton");
         if (downloadButton.text().contains("Download Now")) {
             String authorUrl = "https://www.spigotmc.org/resources/authors/" + getAuthor().combine();
-            System.out.println("Checking price: " + authorUrl);
             Document authorResources = SpigotSite.getInstance().getDocument(authorUrl).get();
             Elements list = authorResources.select("ol.resourceList li");
             for (Element el : list) {
@@ -41,7 +40,7 @@ public class SpigotPremiumResource extends SpigotResource {
         }
 
         // Update buyer
-        if (getAuthor().equals(SpigotSite.getInstance().getSpigotMasterUser().getUserName())) {
+        if (getAuthor().getUserName().equals(SpigotSite.getInstance().getSpigotMasterUser().getUserName())) {
             String url = objectUrl + "/buyers";
             Document buyerTab = SpigotSite.getInstance().getDocument(url).get();
             // Get all available buyer pages

@@ -19,7 +19,7 @@ import java.util.List;
 public class SpigotResource extends SpigotObject {
 
     @Getter
-    private String name, lastUpdate, tag, firstRelease, version, iconUrl, jarSize;
+    private String name, lastUpdateDate, tag, firstRelease, version, iconUrl, jarSize;
     @Getter
     private int totalDownloads;
     @Getter
@@ -44,7 +44,7 @@ public class SpigotResource extends SpigotObject {
         this.name = resourceInfo.select("h1").first().text();
         this.tag = resourceInfo.getElementsByClass("tagLine muted").first().text();
         Element sideResourceInfo = objectDocument.getElementsByClass("uix_mainSidebar").first().getElementById("resourceInfo").getElementsByClass("secondaryContent").first();
-        this.lastUpdate = sideResourceInfo.select(".lastUpdate").text();
+        this.lastUpdateDate = sideResourceInfo.select("dl.lastUpdate").text().replace("Last Update: ", "");
         this.category = Category.match(sideResourceInfo.select(".resourceCategory").first().getElementsByTag("a").first().text());
         this.firstRelease = sideResourceInfo.select(".firstRelease").text();
         this.totalDownloads = Integer.parseInt(sideResourceInfo.select(".downloadCount").first().getElementsByTag("dd").first().text().replace(",", ""));

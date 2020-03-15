@@ -1,5 +1,4 @@
 import me.droreo002.site.SpigotSite;
-import me.droreo002.site.spigot.SpigotBuyers;
 import me.droreo002.site.spigot.user.SpigotMasterUser;
 import me.droreo002.site.spigot.resource.SpigotPremiumResource;
 import me.droreo002.site.spigot.resource.SpigotResource;
@@ -8,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 
 public class SpigotSiteTest {
 
@@ -35,7 +33,20 @@ public class SpigotSiteTest {
                 logData("Name", user.getUserName());
                 logData("Id", String.valueOf(user.getId()));
                 logData("Profile Image", user.getProfileImageUrl());
+                logData("Last profile post", user.getLastProfilePost().toString());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getUserByName() {
+        header("Get user by name");
+        try {
+            SpigotUser user = spigotSite.getSpigotUserManager().getObject("Ramacraft123").get();
+            logData("User id", String.valueOf(user.getUserId()));
+            logData("Last profile post", user.getLastProfilePost().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,12 +56,13 @@ public class SpigotSiteTest {
     public void getPremiumResourceTest() {
         header("Get premium resource by ID");
         try {
-            SpigotResource resource = spigotSite.getSpigotResourceManager().getObject(75786).get();
+            SpigotResource resource = spigotSite.getSpigotResourceManager().getObject(65529).get();
             logData("Resource name", resource.getName());
             logData("Resource author", resource.getAuthor().combine());
             logData("Resource downloads", String.valueOf(resource.getTotalDownloads()));
             logData("Resource category", resource.getCategory().getAsString());
-            logData("Latest update", String.valueOf(resource.getLatestUpdate().getId()));
+            logData("Latest update", resource.getLastUpdateDate());
+            logData("Update text", resource.getLatestUpdate().getUpdateArticleText());
             if (resource instanceof SpigotPremiumResource) logData("Resource price", ((SpigotPremiumResource) resource).getPrice());
         } catch (Exception e) {
             e.printStackTrace();
