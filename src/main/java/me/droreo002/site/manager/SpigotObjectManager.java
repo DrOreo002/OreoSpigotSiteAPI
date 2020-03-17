@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public abstract class SpigotObjectManager<T extends SpigotObject> {
 
     public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
+    public static final ExecutorService UPDATER_THREAD_POOL = Executors.newSingleThreadExecutor();
 
     @Getter
     private SpigotSite spigotSite;
@@ -47,7 +48,7 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                updateObjects();
+                UPDATER_THREAD_POOL.submit(() -> updateObjects());
             }
         }, TimeUnit.MINUTES.toMillis(5), TimeUnit.MINUTES.toMillis(1));
     }

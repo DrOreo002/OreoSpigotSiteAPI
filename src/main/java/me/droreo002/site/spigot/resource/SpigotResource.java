@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpigotResource extends SpigotObject {
 
@@ -37,7 +38,7 @@ public class SpigotResource extends SpigotObject {
     @Override
     public void update(@NotNull Document objectDocument, String objectUrl) {
         validate(objectUrl);
-        this.resourceUpdates = new ArrayList<>();
+        this.resourceUpdates = new CopyOnWriteArrayList<>();
         Element resourceInfo = objectDocument.getElementsByClass("resourceInfo").first();
         this.version = resourceInfo.select("h1").first().select(".muted").first().text();
         this.iconUrl = resourceInfo.getElementsByClass("resourceImage").first().getElementsByClass("resourceIcon").first().absUrl("src");
@@ -64,6 +65,7 @@ public class SpigotResource extends SpigotObject {
     @SneakyThrows
     public void updateResourceUpdates(String objectUrl) {
         // Resource update
+        resourceUpdates.clear();
         String updateListUrl = objectUrl + "/updates";
         Document updateDocument = SpigotSite.getInstance().getDocument(updateListUrl).get();
         Elements pages = updateDocument.select("div.PageNav nav a");

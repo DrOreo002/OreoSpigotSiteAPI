@@ -6,7 +6,6 @@ import me.droreo002.site.spigot.SpigotObject;
 import me.droreo002.site.spigot.user.SpigotUser;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.util.concurrent.Future;
 

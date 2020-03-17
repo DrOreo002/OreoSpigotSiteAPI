@@ -24,6 +24,7 @@ dependencies {
     compile 'org.jetbrains:annotations:16.0.2'
     compile 'com.google.guava:guava:28.2-jre'
     compile 'org.jsoup:jsoup:1.13.1'
+    compile 'org.mozilla:rhino:1.7.12' // Local dependency, can't find the online one out there
     compileOnly 'org.projectlombok:lombok:1.18.8'
     testImplementation 'junit:junit:4.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
@@ -46,6 +47,7 @@ shadowJar {
         include(dependency('com.google.guava:.*'))
         include(dependency('org.jetbrains:.*'))
         include(dependency('net.sourceforge.htmlunit:.*'))
+        include(dependency('org.mozilla:.*'))
     }
 }
 

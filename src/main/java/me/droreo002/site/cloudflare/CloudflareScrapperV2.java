@@ -2,6 +2,8 @@ package me.droreo002.site.cloudflare;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -358,27 +360,35 @@ public class CloudflareScrapperV2 {
             sb.append(";");
             List<String> b = regex(str,varA+"\\."+varB+"(.+?)\\;");
             if (b != null) {
-                for (int i =0;i<b.size()-1;i++){
+                for (int i =0; i < b.size() - 1; i++){
                     sb.append("a");
-                    if (eval_fuc!=null&&eval_fuc.size()>0){
-                        sb.append(replaceEval(b.get(i),div_cfdn,eval_fuc));
-                    }else {
+                    if (eval_fuc != null && eval_fuc.size() > 0) {
+                        sb.append(replaceEval(b.get(i), div_cfdn, eval_fuc));
+                    } else {
                         sb.append(b.get(i));
                     }
                     sb.append(";");
                 }
             }
 
-            e("add",sb.toString());
+            e("add", sb.toString());
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-            a = Double.parseDouble(String.valueOf(engine.eval(sb.toString())));
+
+            Context cx = Context.enter();
+            cx.setLanguageVersion(Context.VERSION_1_8);
+            Scriptable scope = cx.initSafeStandardObjects();
+
+            System.out.println("Executing: " + sb.toString());
+            Object evaluated = cx.evaluateString(scope, sb.toString(), "MySource", 1, null);
+            a = Double.parseDouble(String.valueOf(evaluated));
+            System.out.println("    > Found answer of " + a);
 
             List<String> fixNum = regex(str,"toFixed\\((.+?)\\)");
-            if (fixNum!=null){
+            if (fixNum != null) {
                 e("toFix",fixNum.get(0));
                 a = Double.parseDouble((String) engine.eval("String("+ a +".toFixed("+fixNum.get(0)+"));"));
             }
-            if (b !=null && b.get(b.size()-1).contains("t.length")){
+            if (b != null && b.get(b.size() - 1).contains("t.length")) {
                 a += new URL(mUrl).getHost().length();
             }
         } catch (IndexOutOfBoundsException e){

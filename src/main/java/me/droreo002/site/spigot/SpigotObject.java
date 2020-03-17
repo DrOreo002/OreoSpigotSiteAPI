@@ -62,11 +62,10 @@ public abstract class SpigotObject {
         if (url == null) return;
         try {
             Document objectDocument = SpigotSite.getInstance().getDocument(url).get();
-            if (objectDocument.getElementsByClass("baseHtml").text().contains("The requested page could not be found.")) {
-                throw new NullPointerException("Cannot find object data on " + url);
-            }
+            if (objectDocument == null) throw new NullPointerException("Cannot find object data on " + url);
         } catch (Exception e) {
-            throw new NullPointerException("Cannot find object data on " + url + ". Reason is " + e.getMessage());
+            System.out.println("Failed to get object data on " + url);
+            e.printStackTrace();
         }
     }
 
