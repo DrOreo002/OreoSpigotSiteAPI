@@ -50,7 +50,7 @@ public class CloudflareScrapperV2 {
     private HttpURLConnection mGetMainConn;
     private HttpURLConnection mGetRedirectionConn;
 
-    public static final int MAX_COUNT = 3;
+    public static final int MAX_COUNT = 10;
     public static final int CONN_TIMEOUT = 60000;
     public static final String ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3";
 
@@ -94,11 +94,13 @@ public class CloudflareScrapperV2 {
         cloudFlared = !(checkUrl() == 200); // Cloud flared is false if response code is 200
 
         while (!canVisit && cloudFlared) {
+            System.out.println("Solving step taken: " + mRetry_count);
             if (mRetry_count > MAX_COUNT) {
                 throw new IllegalStateException("Failed to bypass CloudFlare!");
             }
             try {
                 int responseCode = checkUrl();
+                System.out.println("Response code of the URL is " + responseCode);
                 if (responseCode == 200) {
                     canVisit = true;
                     BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -374,6 +376,11 @@ public class CloudflareScrapperV2 {
             e("add", sb.toString());
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
+            /*
+            We use rhino because there's a new method (.italics)
+            that cloudflare uses on their obfuscated script
+            that somehow only Rhino could understand the method
+             */
             Context cx = Context.enter();
             cx.setLanguageVersion(Context.VERSION_1_8);
             Scriptable scope = cx.initSafeStandardObjects();

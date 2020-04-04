@@ -50,12 +50,11 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
             public void run() {
                 UPDATER_THREAD_POOL.submit(() -> updateObjects());
             }
-        }, TimeUnit.MINUTES.toMillis(5), TimeUnit.MINUTES.toMillis(1));
+        }, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(5));
     }
 
     /**
      * Update the objects
-     * Warning: Run on the main thread
      */
     public void updateObjects() {
         if (cachedObjects.isEmpty()) return;

@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
@@ -155,8 +156,16 @@ public class SpigotSite {
             if (possibleNewUrl != null) {
                 return getDocument(possibleNewUrl.toURI().toString()).get();
             }
+            StringBuilder html = null;
+            while (html == null) {
+                try {
+                    html = readHtml(connection);
+                } catch (IOException ignored) {
+                    // Ignored
+                }
+            }
 
-            return Jsoup.parse(readHtml(connection).toString());
+            return Jsoup.parse(html.toString());
         });
     }
 
@@ -166,8 +175,7 @@ public class SpigotSite {
      * @param connection The connection
      * @return Html as string
      */
-    @SneakyThrows
-    public StringBuilder readHtml(HttpURLConnection connection) {
+    public StringBuilder readHtml(HttpURLConnection connection) throws IOException {
         StringBuilder response = new StringBuilder();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));

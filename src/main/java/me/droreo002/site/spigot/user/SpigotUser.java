@@ -1,11 +1,10 @@
 package me.droreo002.site.spigot.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import me.droreo002.site.spigot.SpigotObject;
-import me.droreo002.site.utils.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -15,7 +14,7 @@ public class SpigotUser extends SpigotObject {
     private String userName;
     @Getter
     private String profileImageUrl;
-    @Getter
+    @Getter @Nullable
     private ProfilePost lastProfilePost;
 
     public SpigotUser(@NotNull String objectUrl, int id) {
@@ -29,9 +28,14 @@ public class SpigotUser extends SpigotObject {
     @Override
     public void update(@NotNull Document newDocument, String objectUrl) {
         validate(objectUrl);
-        this.userName = newDocument.getElementsByClass("username").first().text().replace(" ", "");
+        Element possibleUsername = newDocument.select("div.mainText h1.username").first();
+        if (possibleUsername == null) {
+            possibleUsername = newDocument.select("a.username").first();
+        }
+        this.userName = possibleUsername.text();
         this.profileImageUrl = newDocument.getElementsByClass("avatarScaler").first().getElementsByTag("img").first().absUrl("src");
         Element firstProfilePost = newDocument.select("ol.messageSimpleList li[id*=profile-post]").first();
+        if (firstProfilePost == null) return;
         this.lastProfilePost = new ProfilePost(
                 firstProfilePost.select("article blockquote").text(),
                 firstProfilePost.select("div.messageContent a[class*=username]").text(),

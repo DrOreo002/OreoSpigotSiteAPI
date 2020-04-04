@@ -74,21 +74,19 @@ public class SpigotResource extends SpigotObject {
                 String newUrl = SpigotSite.SPIGOT_URL + "/" + page.attr("href");
                 Document updatePage = SpigotSite.getInstance().getDocument(newUrl).get();
                 Elements elements = updatePage.select("div.updateContainer ol li.primaryContent");
-                for (int i = 0; i < 5; i++) {
+                try {
+                    Element uPage = elements.get(0);
+                    int updateId;
                     try {
-                        Element uPage = elements.get(i);
-                        int updateId;
-                        try {
-                            updateId = Integer.parseInt(uPage.attr("id").replace("update-", ""));
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error reading update on " + uPage.html());
-                            continue;
-                        }
-                        String updateDirectUrl = objectUrl + "/update?" + "update=" + updateId;
-                        resourceUpdates.add(new SpigotResourceUpdate(updateDirectUrl, 0));
-                    } catch (IndexOutOfBoundsException e) {
-                        break;
+                        updateId = Integer.parseInt(uPage.attr("id").replace("update-", ""));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error reading update on " + uPage.html());
+                        continue;
                     }
+                    String updateDirectUrl = objectUrl + "/update?" + "update=" + updateId;
+                    resourceUpdates.add(new SpigotResourceUpdate(updateDirectUrl, 0));
+                } catch (IndexOutOfBoundsException e) {
+                    break;
                 }
                 break; // Only loop for first page
             }
