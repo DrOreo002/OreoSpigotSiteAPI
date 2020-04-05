@@ -9,14 +9,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.concurrent.ExecutionException;
+
 public class SpigotPremiumResource extends SpigotResource {
 
     @Getter
     private SpigotBuyers buyers; // Can be null if this premium resource is not owned by master user
     @Getter
     private String price;
+    @Getter
+    private int totalPurchases;
 
-    public SpigotPremiumResource(@NotNull String objectUrl, int id) {
+    public SpigotPremiumResource(@NotNull String objectUrl, int id) throws ExecutionException, InterruptedException {
         super(objectUrl, id);
     }
 
@@ -39,20 +43,13 @@ public class SpigotPremiumResource extends SpigotResource {
             this.price = downloadButton.text().replace(getJarSize() + " .jar", "").split("for")[1];
         }
 
-        // Update buyer
-        if (getAuthor().getUserName().equals(SpigotSite.getInstance().getSpigotMasterUser().getUserName())) {
-            String url = objectUrl + "/buyers";
-            Document buyerTab = SpigotSite.getInstance().getDocument(url).get();
-            // Get all available buyer pages
-            Elements pageNav = buyerTab.select("div.PageNav");
-            int pages = 1;
-            if (pageNav.size() != 0) {
-                pages = Integer.parseInt(pageNav.attr("data-last"));
-            }
-            for (int i = 1; i <= pages; i++) {
-                String newUrl = url + "?page=" + i;
-                Document newDoc = SpigotSite.getInstance().getDocument(newUrl).get();
-                this.buyers = new SpigotBuyers(newDoc);
+        if (this.totalPurchases != getTotalDownloads()) {
+            this.totalPurchases = getTotalDownloads();
+            // Update buyer
+            if (getAuthor().getUserName().equals(SpigotSite.getInstance().getSpigotMasterUser().getUserName())) {
+                String url = objectUrl + "/buyers";
+                Document buyerTab = SpigotSite.getInstance().getDocument(url).get();
+                this.buyers = new SpigotBuyers(buyerTab, url);
             }
         }
     }

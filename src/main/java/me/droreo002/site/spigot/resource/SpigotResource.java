@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class SpigotResource extends SpigotObject {
 
@@ -30,7 +31,7 @@ public class SpigotResource extends SpigotObject {
     @Getter
     private Author author;
 
-    public SpigotResource(@NotNull String objectUrl, int id) {
+    public SpigotResource(@NotNull String objectUrl, int id) throws ExecutionException, InterruptedException {
         super(objectUrl, id);
     }
 

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.util.concurrent.ExecutionException;
+
 public class SpigotUser extends SpigotObject {
 
     @Getter
@@ -17,7 +19,7 @@ public class SpigotUser extends SpigotObject {
     @Getter @Nullable
     private ProfilePost lastProfilePost;
 
-    public SpigotUser(@NotNull String objectUrl, int id) {
+    public SpigotUser(@NotNull String objectUrl, int id) throws ExecutionException, InterruptedException {
         super(objectUrl, id);
     }
 

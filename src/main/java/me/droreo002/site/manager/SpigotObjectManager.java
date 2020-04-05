@@ -50,7 +50,7 @@ public abstract class SpigotObjectManager<T extends SpigotObject> {
             public void run() {
                 UPDATER_THREAD_POOL.submit(() -> updateObjects());
             }
-        }, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(5));
+        }, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(30));
     }
 
     /**

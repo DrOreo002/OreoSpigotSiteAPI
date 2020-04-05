@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.util.concurrent.ExecutionException;
+
 public class SpigotResourceUpdate extends SpigotObject {
 
     @Getter
@@ -17,7 +19,7 @@ public class SpigotResourceUpdate extends SpigotObject {
     @Getter
     private String updateArticleText;
 
-    public SpigotResourceUpdate(@NotNull String objectUrl, int id) {
+    public SpigotResourceUpdate(@NotNull String objectUrl, int id) throws ExecutionException, InterruptedException {
         super(objectUrl, id);
     }
 

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 
+import java.util.concurrent.ExecutionException;
+
 public abstract class SpigotObject {
 
     @Getter
@@ -17,19 +19,23 @@ public abstract class SpigotObject {
     @Getter @Setter
     private int id;
 
-    @SneakyThrows
-    public SpigotObject(@NotNull String objectUrl, int id) {
-        this.objectUrl = objectUrl;
-        this.id = id;
-        this.objectDocument = SpigotSite.getInstance().getDocument(objectUrl).get();
-        update(objectDocument, objectUrl);
+    public SpigotObject(@NotNull String objectUrl, int id) throws ExecutionException, InterruptedException {
+        this(SpigotSite.getInstance().getDocument(objectUrl).get(), objectUrl, id);
     }
 
     public SpigotObject(@NotNull Document objectDocument) {
+        this(objectDocument, null, 0);
+    }
+
+    public SpigotObject(@NotNull Document objectDocument, @Nullable String objectUrl) {
+        this(objectDocument, objectUrl, 0);
+    }
+
+    public SpigotObject(@NotNull Document objectDocument, @Nullable String objectUrl, int id) {
         this.objectDocument = objectDocument;
-        this.id = 0;
-        this.objectUrl = null;
-        update(objectDocument, null);
+        this.objectUrl = objectUrl;
+        this.id = id;
+        update(objectDocument, objectUrl);
     }
 
     /**
