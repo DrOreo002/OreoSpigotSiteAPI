@@ -113,9 +113,7 @@ public class SpigotBuyers extends SpigotObject {
      * @return true if buyer, false otherwise
      */
     public boolean isBuyer(int userId) {
-        return this.buyerCredentials.stream().anyMatch(b -> {
-            return b.getUserId() == userId;
-        });
+        return this.buyerCredentials.stream().anyMatch(b -> b.getUserId() == userId);
     }
 
     /**
